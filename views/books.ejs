@@ -8,15 +8,19 @@
   </head>
   <body>
     <h1>All Book Reviews</h1>
-
+    <video autoplay loop muted id="background-video-clip">
+      <source src="/images/space-portal.960x540.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
     <!-- Display Existing Books -->
     <ul>
       <% books.forEach((book, index) => { %>
       <li>
-        <strong>Title:</strong> <%= book.title %><br />
-        <strong>Review:</strong> <%= book.review %><br />
-        <strong>Rating:</strong> <%= book.rating %>/5<br />
-
+        <div class="book-box">
+          <strong class="book-tittle">Title:</strong> <%= book.title %><br />
+          <strong class="book-review">Review:</strong> <%= book.review %><br />
+          <strong class="book-rating">Rating:</strong> <%= book.rating %>/5<br />
+        </div>
         <!-- Edit Button -->
         <form action="/api/books/<%= book.id %>?_method=PUT" method="POST">
           <input type="text" name="title" value="<%= book.title %>" required />
@@ -56,6 +60,6 @@
       <button type="submit">Add Book</button>
     </form>
 
-    <a href="/">Go Back</a>
+    <a class="reroute" href="/">Go Back</a>
   </body>
 </html>

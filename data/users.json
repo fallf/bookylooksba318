@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "name": "Fatou Fall",
+    "email": "fatou-fall@example.com",
+    "password": "$2b$10$ZhzOkWYIshpvgDMTXWWMO.4brBmI91XQ0CVzDMx.lSfZQZ65PRN5C"
+  },
+  {
+    "id": "2",
+    "name": "Dior Fall",
+    "email": "dior.fall@example.com",
+    "password": "$2b$10$eMNVtXdm/3ZrPqvcgtFiuOmhv0A7LhVjTk5cOJZ/7quc7/PqebpMS"
+  },
+  {
+    "id": "3",
+    "name": "amina gueye",
+    "email": "amina.gueye@example.com",
+    "password": "$2b$10$wP54M6FEU0aDdEk3a5H3P.p4FHV8DyDse93F0IXCqFXzxX4DkhRSG"
+  }
+]

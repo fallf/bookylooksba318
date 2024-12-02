@@ -3,6 +3,10 @@
 <head>
   <title>BookyLooky</title>
 </head>
+<video autoplay loop muted id="background-video-clip">
+  <source src="/images/space-portal.960x540.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
 <body>
   <h1>BookyLooky</h1>
   <form action="/books" method="POST">
@@ -23,6 +27,6 @@
   <button type="submit">Log Out</button>
 </form>
 
-<a href="/books">Manage Books</a>
+<a class="reroute" href="/books">Manage Books</a>
 
 <script src="/js/script.js"></script>
