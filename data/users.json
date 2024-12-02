@@ -16,5 +16,17 @@
     "name": "amina gueye",
     "email": "amina.gueye@example.com",
     "password": "$2b$10$wP54M6FEU0aDdEk3a5H3P.p4FHV8DyDse93F0IXCqFXzxX4DkhRSG"
+  },
+  {
+    "id": "1733112752189",
+    "name": "f",
+    "email": "f@f",
+    "password": "$2b$10$Y0wZSZ0zYL7wV93SJrPO8.q74mqVgrWTYGmiLb2U/bpAcvmR6i5ca"
+  },
+  {
+    "id": "1733113588973",
+    "name": "w",
+    "email": "w@w",
+    "password": "$2b$10$ZL4evj.rT8180Ckm1tA9h.DH4Kp6z20sBo9f6cBSJ3iWZmDkQQvPu"
   }
 ]

@@ -10,15 +10,22 @@ const flash = require("express-flash");
 const session = require("express-session");
 const methodOverride = require("method-override");
 const fs = require("fs");
+const path = require("path");
 const initializePassport = require("./routes/passport-config");
+
+// Paths to JSON files
+const booksFilePath = path.join(__dirname, "data", "books.json");
+const usersFilePath = path.join(__dirname, "data", "users.json");
+
+// Load data from JSON files
+let books = JSON.parse(fs.readFileSync(booksFilePath, "utf8"));
+let users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
+
 initializePassport(
   passport,
   (email) => users.find((user) => user.email === email),
   (id) => users.find((user) => user.id === id)
 );
-
-const users = []; // Temporary user storage
-const books = [];
 
 app.set("view-engine", "ejs");
 app.use(express.static("public"));
@@ -30,8 +37,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: false }, // Change to false for development
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride("_method"));
@@ -44,6 +53,19 @@ app.get("/", checkAuthenticated, (req, res) => {
 app.get("/login", checkNotAuthenticated, (req, res) => {
   res.render("login.ejs");
 });
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login"); // Redirect to login if not authenticated
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+  next();
+}
 
 app.post(
   "/login",
@@ -62,12 +84,14 @@ app.get("/register", checkNotAuthenticated, (req, res) => {
 app.post("/register", checkNotAuthenticated, async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    users.push({
+    const newUser = {
       id: Date.now().toString(),
       name: req.body.name,
       email: req.body.email,
       password: hashedPassword,
-    });
+    };
+    users.push(newUser);
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2)); // Persist users to file
     res.redirect("/login");
   } catch {
     res.redirect("/register");
@@ -78,40 +102,38 @@ app.delete("/logout", (req, res) => {
   req.logOut();
   res.redirect("/login");
 });
-//middle ware
-function checkAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
 
-  res.redirect("/login");
-}
-//middleware
-function checkNotAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return res.redirect("/");
-  }
-  next();
-}
+// function checkAuthenticated(req, res, next) {
+//   if (req.isAuthenticated()) {
+//     return next();
+//   }
+//   res.redirect("/login"); // Redirects to login if not authenticated
+// }
+
+// function checkNotAuthenticated(req, res, next) {
+//   if (req.isAuthenticated()) {
+//     return res.redirect("/"); // Redirects to home if already authenticated
+//   }
+//   next();
+// }
 
 app.get("/api/books", (req, res) => {
   res.json(books);
 });
-// Render books page
+
 app.get("/books", checkAuthenticated, (req, res) => {
   res.render("books.ejs", { books });
 });
 
-// Create a new book (API)
-app.post("/api/books", (req, res) => {
+app.post("/api/books", checkAuthenticated, (req, res) => {
   const { title, review, rating } = req.body;
   const newBook = { id: Date.now().toString(), title, review, rating };
   books.push(newBook);
+  fs.writeFileSync(booksFilePath, JSON.stringify(books, null, 2));
   res.status(201).json(newBook);
 });
 
-// Update a book (API)
-app.put("/api/books/:id", (req, res) => {
+app.put("/api/books/:id", checkAuthenticated, (req, res) => {
   const { id } = req.params;
   const { title, review, rating } = req.body;
   const book = books.find((b) => b.id === id);
@@ -122,18 +144,19 @@ app.put("/api/books/:id", (req, res) => {
   book.review = review || book.review;
   book.rating = rating || book.rating;
 
+  fs.writeFileSync(booksFilePath, JSON.stringify(books, null, 2));
   res.json(book);
 });
 
-// Delete a book (API)
-app.delete("/api/books/:id", (req, res) => {
+app.delete("/api/books/:id", checkAuthenticated, (req, res) => {
   const { id } = req.params;
   const bookIndex = books.findIndex((b) => b.id === id);
 
   if (bookIndex === -1) return res.status(404).send("Book not found");
 
   books.splice(bookIndex, 1);
+  fs.writeFileSync(booksFilePath, JSON.stringify(books, null, 2));
   res.status(204).send();
 });
 
-app.listen(3000);
+app.listen(3000, () => console.log("Server running on port 3000"));
