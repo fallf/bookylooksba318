@@ -1,6 +1,12 @@
+<link rel="stylesheet" href="/css/styles.css" />
 <h1>Login</h1>
 <% if (messages.error) { %> <%= messages.error %> <% } %>
 <br />
+<video autoplay loop muted id="background-video-clip">
+  <source src="/images/coffee-book-and-rain.960x540.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
 <form action="/login" method="POST">
   <div>
     <label for="email">Email</label>
@@ -14,4 +20,5 @@
   <br />
   <button type="submit">Login</button>
 </form>
+
 <a href="/register">Register</a>

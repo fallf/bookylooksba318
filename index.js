@@ -17,9 +17,12 @@ initializePassport(
   (id) => users.find((user) => user.id === id)
 );
 
-const users = [];
+const users = []; // Temporary user storage
+const books = [];
 
 app.set("view-engine", "ejs");
+app.use(express.static("public"));
+
 app.use(express.urlencoded({ extended: false }));
 app.use(flash());
 app.use(
@@ -32,6 +35,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride("_method"));
+app.use(express.json());
 
 app.get("/", checkAuthenticated, (req, res) => {
   res.render("index.ejs", { name: req.user.name });
@@ -74,7 +78,7 @@ app.delete("/logout", (req, res) => {
   req.logOut();
   res.redirect("/login");
 });
-
+//middle ware
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -82,12 +86,54 @@ function checkAuthenticated(req, res, next) {
 
   res.redirect("/login");
 }
-
+//middleware
 function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/");
   }
   next();
 }
+
+app.get("/api/books", (req, res) => {
+  res.json(books);
+});
+// Render books page
+app.get("/books", checkAuthenticated, (req, res) => {
+  res.render("books.ejs", { books });
+});
+
+// Create a new book (API)
+app.post("/api/books", (req, res) => {
+  const { title, review, rating } = req.body;
+  const newBook = { id: Date.now().toString(), title, review, rating };
+  books.push(newBook);
+  res.status(201).json(newBook);
+});
+
+// Update a book (API)
+app.put("/api/books/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, review, rating } = req.body;
+  const book = books.find((b) => b.id === id);
+
+  if (!book) return res.status(404).send("Book not found");
+
+  book.title = title || book.title;
+  book.review = review || book.review;
+  book.rating = rating || book.rating;
+
+  res.json(book);
+});
+
+// Delete a book (API)
+app.delete("/api/books/:id", (req, res) => {
+  const { id } = req.params;
+  const bookIndex = books.findIndex((b) => b.id === id);
+
+  if (bookIndex === -1) return res.status(404).send("Book not found");
+
+  books.splice(bookIndex, 1);
+  res.status(204).send();
+});
 
 app.listen(3000);

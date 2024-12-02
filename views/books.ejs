@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Book Reviews</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <h1>All Book Reviews</h1>
+
+    <!-- Display Existing Books -->
+    <ul>
+      <% books.forEach((book, index) => { %>
+      <li>
+        <strong>Title:</strong> <%= book.title %><br />
+        <strong>Review:</strong> <%= book.review %><br />
+        <strong>Rating:</strong> <%= book.rating %>/5<br />
+
+        <!-- Edit Button -->
+        <form action="/api/books/<%= book.id %>?_method=PUT" method="POST">
+          <input type="text" name="title" value="<%= book.title %>" required />
+          <textarea name="review" required><%= book.review %></textarea>
+          <input
+            type="number"
+            name="rating"
+            value="<%= book.rating %>"
+            min="1"
+            max="5"
+            required
+          />
+          <button type="submit">Edit</button>
+        </form>
+
+        <!-- Delete Button -->
+        <form action="/api/books/<%= book.id %>?_method=DELETE" method="POST">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+      <hr />
+      <% }) %>
+    </ul>
+
+    <!-- Add New Book -->
+    <h2>Add a New Book</h2>
+    <form action="/api/books" method="POST">
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required />
+      <br />
+      <label for="review">Review:</label>
+      <textarea id="review" name="review" required></textarea>
+      <br />
+      <label for="rating">Rating:</label>
+      <input type="number" id="rating" name="rating" min="1" max="5" required />
+      <br />
+      <button type="submit">Add Book</button>
+    </form>
+
+    <a href="/">Go Back</a>
+  </body>
+</html>
